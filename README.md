@@ -10,31 +10,36 @@ Each top-level directory containing a `SKILL.md` is a skill. The install script 
 
 ## Install
 
-One-shot via npx (no clone needed for runtime, but recommended to clone first so symlinks point at a stable path):
+No clone required — fetch and install in one shot:
+
+```bash
+npx github:martinwheeler/skills                          # all skills
+npx github:martinwheeler/skills syncing-shopping-cart    # one
+npx github:martinwheeler/skills a b c                    # several
+```
+
+The script downloads a tarball from GitHub, extracts only the skills it needs into `~/.claude/skills-source/`, then symlinks each into `~/.claude/skills/`. Re-run any time to update — it overwrites the cached source and refreshes symlinks.
+
+For development, clone and run from the working tree (script auto-detects `.git` and uses the local clone as the symlink source):
 
 ```bash
 git clone git@github.com:martinwheeler/skills.git ~/code/skills
 cd ~/code/skills
-npx . # or: node bin/install.mjs
-```
-
-Or fetch + run directly:
-
-```bash
-npx github:martinwheeler/skills
-```
-
-Install just one skill (or several) by name:
-
-```bash
-npx github:martinwheeler/skills syncing-shopping-cart
+node bin/install.mjs
 ```
 
 Flags:
 
+- `--fetch` — force download from GitHub even when run from a clone.
+- `--local` — force use of the local repo (skip download).
 - `--dry-run` / `-n` — show what would happen, change nothing.
 - `--force` / `-f` — back up and replace any existing non-symlink skill of the same name.
 - `--help` / `-h` — show usage.
+
+Env:
+
+- `SKILLS_REPO=owner/repo` — override the source repo.
+- `SKILLS_REF=branch|sha` — override the ref (default `HEAD`).
 
 The script:
 
