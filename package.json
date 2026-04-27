@@ -1,0 +1,24 @@
+{
+  "name": "@martinwheeler/skills",
+  "version": "0.1.0",
+  "description": "Claude Code skills collection",
+  "bin": {
+    "install-skills": "bin/install.mjs"
+  },
+  "scripts": {
+    "install-skills": "node bin/install.mjs"
+  },
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/martinwheeler/skills.git"
+  },
+  "files": [
+    "bin",
+    "*/SKILL.md",
+    "*/scripts",
+    "*/reference",
+    "*/assets"
+  ]
+}
