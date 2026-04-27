@@ -24,10 +24,17 @@ Or fetch + run directly:
 npx github:martinwheeler/skills
 ```
 
+Install just one skill (or several) by name:
+
+```bash
+npx github:martinwheeler/skills syncing-shopping-cart
+```
+
 Flags:
 
 - `--dry-run` / `-n` — show what would happen, change nothing.
 - `--force` / `-f` — back up and replace any existing non-symlink skill of the same name.
+- `--help` / `-h` — show usage.
 
 The script:
 

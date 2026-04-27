@@ -18,9 +18,27 @@ const SKIP = new Set([
   ".idea",
 ]);
 
-const args = new Set(process.argv.slice(2));
-const force = args.has("--force") || args.has("-f");
-const dryRun = args.has("--dry-run") || args.has("-n");
+const rawArgs = process.argv.slice(2);
+const flags = new Set(rawArgs.filter((a) => a.startsWith("-")));
+const requested = rawArgs.filter((a) => !a.startsWith("-"));
+const force = flags.has("--force") || flags.has("-f");
+const dryRun = flags.has("--dry-run") || flags.has("-n");
+const showHelp = flags.has("--help") || flags.has("-h");
+
+if (showHelp) {
+  console.log(`Usage: install-skills [skill...] [--dry-run] [--force]
+
+Symlinks skills from this repo into ~/.claude/skills.
+
+Args:
+  [skill...]   One or more skill names to install. Default: all skills.
+
+Flags:
+  -n, --dry-run   Show what would happen, change nothing.
+  -f, --force     Back up and replace existing non-symlink skills.
+  -h, --help      Show this help.`);
+  process.exit(0);
+}
 
 function isSkillDir(name, fullPath) {
   if (name.startsWith(".")) return false;
@@ -75,13 +93,24 @@ async function linkSkill(name) {
 async function main() {
   await ensureDir(skillsTarget);
   const entries = await readdir(repoRoot, { withFileTypes: true });
-  const skills = entries
+  const available = entries
     .filter((e) => e.isDirectory() && isSkillDir(e.name, join(repoRoot, e.name)))
     .map((e) => e.name);
 
-  if (skills.length === 0) {
+  if (available.length === 0) {
     console.error("No skills found at repo root (need SKILL.md inside each skill dir).");
     process.exit(1);
+  }
+
+  let skills = available;
+  if (requested.length > 0) {
+    const unknown = requested.filter((n) => !available.includes(n));
+    if (unknown.length > 0) {
+      console.error(`Unknown skill(s): ${unknown.join(", ")}`);
+      console.error(`Available: ${available.join(", ")}`);
+      process.exit(1);
+    }
+    skills = requested;
   }
 
   console.log(`Installing ${skills.length} skill(s) -> ${skillsTarget}${dryRun ? " (dry run)" : ""}`);
